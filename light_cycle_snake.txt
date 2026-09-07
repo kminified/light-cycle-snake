@@ -1,0 +1,393 @@
+import pygame
+import math
+import random
+
+pygame.init()
+pygame.font.init()
+
+#Red player - wasd to move
+#Blue player - arrow keys to move
+#Touch the purple stars to grow
+#Touch the gold stars to gain invincibility and extra speed for 5 seconds.
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
+PURPLE = (128, 0, 128)
+
+screen_width = 800
+screen_height = 500
+screen = pygame.display.set_mode((screen_width, screen_height))
+font = pygame.font.SysFont('Arial', 30)
+fontS = pygame.font.SysFont('Arial', 20)
+fontB = pygame.font.SysFont('Arial', 60)
+head = pygame.Rect(152, 82, 18, 18)
+head2 = pygame.Rect(636, 417, 18, 18)
+bodies = []
+bodies2 = []
+topBox = pygame.Rect(88, -2944, 700, 3000)
+bottomBox = pygame.Rect(88, 442, 700, 3000)
+leftBox = pygame.Rect(-2892, 28, 3000, 510)
+rightBox = pygame.Rect(692, 40, 3000, 510)
+resButton = pygame.Rect(388, 225, 30, 30)
+clock = pygame.time.Clock()
+
+stars = []
+gstars = []
+
+speed = 15
+speed2 = 15
+
+score = 0
+score2 = 0
+
+direction = 'right'
+direction2 = 'left'
+start = False
+start2 = False
+stop = False
+stop2 = False
+death = False
+death2 = False
+restart = False
+timer = 0
+framesC = 0
+move_delay = 5
+move_counter = 0
+move_delay2 = 5
+move_counter2 = 0
+
+blueWin = False
+redWin = False
+draw = False
+
+goldPower = False
+goldPower2 = False
+
+gSpawn = pygame.USEREVENT
+pygame.time.set_timer(gSpawn, 5000)
+
+bodies.append([head.x-15, head.y, 18, 18])
+bodies2.append([head2.x+15, head2.y, 18, 18])
+
+rStarx = random.randint(128, 661)
+rStary = random.randint(69, 423)
+stars.append([rStarx, rStary, 20, 20])
+stars.append([rStarx+7.5, rStary-4, 5, 5])
+stars.append([rStarx-4, rStary+7.5, 5, 5])
+stars.append([rStarx+19, rStary+7.5, 5, 5])
+stars.append([rStarx+7.5, rStary+19, 5, 5])
+
+
+
+#new position stars
+def starReset():
+    rStarx = random.randint(128, 661)
+    rStary = random.randint(69, 423)
+    stars[0][0] = rStarx
+    stars[0][1] = rStary
+    stars[1][0] = rStarx+7.5
+    stars[1][1] = rStary-4
+    stars[2][0] = rStarx-4
+    stars[2][1] = rStary+7.5
+    stars[3][0] = rStarx+19
+    stars[3][1] = rStary+7.5
+    stars[4][0] = rStarx+7.5
+    stars[4][1] = rStary+19
+    
+
+    
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            #key move
+            if event.key == pygame.K_w:
+                if direction != 'down' and head.x != bodies[0][0]:
+                    start = True
+                    direction = 'up'
+            if event.key == pygame.K_a:
+                if direction != 'right' and head.y != bodies[0][1]:
+                    start = True
+                    direction = 'left'
+            if event.key == pygame.K_d:
+                if start:
+                    if direction != 'left' and head.y != bodies[0][1]:
+                        direction = 'right'
+                else:
+                    if direction != 'left':
+                        start = True
+                        direction = 'right'
+            if event.key == pygame.K_s:
+                if direction != 'up' and head.x != bodies[0][0]:
+                    start = True
+                    direction = 'down'
+            if event.key == pygame.K_UP:
+                if direction2 != 'down' and head2.x != bodies2[0][0]:
+                    start2 = True
+                    direction2 = 'up'
+            if event.key == pygame.K_LEFT:
+                if start2:
+                    if direction2 != 'right' and head2.y != bodies2[0][1]:
+                        start2 = True
+                        direction2 = 'left'
+                else:
+                    if direction2 != 'right':
+                        start2 = True
+                        direction2 = 'left'
+            if event.key == pygame.K_RIGHT:
+                if direction2 != 'left' and head2.y != bodies2[0][1]:
+                    start2 = True
+                    direction2 = 'right'
+            if event.key == pygame.K_DOWN:
+                if direction2 != 'up' and head2.x != bodies2[0][0]:
+                    start2 = True
+                    direction2 = 'down'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if resButton.collidepoint(event.pos) and (death or death2):
+                restart = True
+                
+        if (event.type == gSpawn) and (start or start2):
+            if len(gstars) == 0:
+                rgStarx = random.randint(128, 661)
+                rgStary = random.randint(69, 423)
+                gstars.append([rgStarx, rgStary, 20, 20])
+                gstars.append([rgStarx+7.5, rgStary-4, 5, 5])
+                gstars.append([rgStarx-4, rgStary+7.5, 5, 5])
+                gstars.append([rgStarx+19, rgStary+7.5, 5, 5])
+                gstars.append([rgStarx+7.5, rgStary+19, 5, 5])
+    screen.fill(WHITE)
+    
+    if not (start or start2):
+        pygame.time.set_timer(gSpawn, 0)
+        pygame.time.set_timer(gSpawn, 5000)
+    #box
+    pygame.draw.rect(screen, BLACK, topBox)
+    pygame.draw.rect(screen, BLACK, bottomBox)
+    pygame.draw.rect(screen, BLACK, leftBox)
+    pygame.draw.rect(screen, BLACK, rightBox)
+    
+    
+    #snake
+    for body in bodies:
+        pygame.draw.rect(screen, RED, body)
+    for body2 in bodies2:
+        pygame.draw.rect(screen, BLUE, body2)
+    pygame.draw.ellipse(screen, RED, head)
+    pygame.draw.ellipse(screen, BLUE, head2)
+    
+    #restart
+    if restart:
+        head = pygame.Rect(152, 82, 18, 18)
+        head2 = pygame.Rect(636, 417, 18, 18)
+        bodies = []
+        bodies2 = []
+        bodies.append([head.x-15, head.y, 18, 18])
+        bodies2.append([head2.x+15, head2.y, 18, 18])
+        for star in stars:
+            starReset()
+        for gstar in gstars:
+            gstars.clear()
+        pygame.time.set_timer(gSpawn, 0)
+        pygame.time.set_timer(gSpawn, 5000)
+        timer = 0
+        frameC = 0
+        death = False
+        death2 = False
+        stop = False
+        stop2 = False
+        score = 0
+        score2 = 0
+        blueWin = False
+        redWin = False
+        draw = False
+        goldPower = False
+        goldPower2 = False
+        
+        start = False
+        start2 = False
+        direction = 'right'
+        direction2 = 'left'
+        restart = False
+
+    #star
+    for star in stars:
+        pygame.draw.ellipse(screen, PURPLE, stars[0])
+        pygame.draw.rect(screen, PURPLE, stars[1])
+        pygame.draw.rect(screen, PURPLE, stars[2])
+        pygame.draw.rect(screen, PURPLE, stars[3])
+        pygame.draw.rect(screen, PURPLE, stars[4])
+    for gstar in gstars:
+        pygame.draw.ellipse(screen, YELLOW, gstars[0])
+        pygame.draw.rect(screen, YELLOW, gstars[1])
+        pygame.draw.rect(screen, YELLOW, gstars[2])
+        pygame.draw.rect(screen, YELLOW, gstars[3])
+        pygame.draw.rect(screen, YELLOW, gstars[4])
+        
+    #speed and invincibility 5 sec
+    if goldPower:
+        screen.blit(fontS.render('Red has a speed boost and invincibility for 5 seconds.', True, RED), (180, 90))
+        move_delay = 3.5
+        framesC += 1
+        if framesC == 60:
+            timer += 1
+            framesC = 0
+        if timer == 5:
+            goldPower = False
+            move_delay = 5
+            
+    if goldPower2:
+        screen.blit(fontS.render('Blue has a speed boost and invincibility for 5 seconds.', True, BLUE), (180, 90))
+        move_delay2 = 3.5
+        framesC += 1
+        if framesC == 60:
+            timer += 1
+            framesC = 0
+        if timer == 5:
+            goldPower2 = False
+            move_delay2 = 5
+    
+    #player red
+    if start and not stop:
+        move_counter += 1
+
+        if move_counter >= move_delay:
+            move_counter = 0
+            prev_positions = [(head.x, head.y)]
+            
+            for body in bodies:
+                prev_positions.append([body[0], body[1]])
+            
+            #move head
+            if direction == 'up':
+                head.y -= speed
+            if direction == 'down':
+                head.y += speed
+            if direction == 'left':
+                head.x -= speed
+            if direction == 'right':
+                head.x += speed
+                
+            #move body
+            for i in range(len(bodies)):
+                bodies[i][0], bodies[i][1] = prev_positions[i]
+            
+        for star in stars:
+            if head.colliderect(star):
+                starReset()
+                bodies.append([bodies[-1][0], bodies[-1][1], 18, 18])
+                score += 1
+            for body in bodies:
+                if pygame.Rect(body).colliderect(star):
+                    starReset()
+        for gstar in gstars:
+            if head.colliderect(gstar):
+                pygame.time.set_timer(gSpawn, 0)
+                pygame.time.set_timer(gSpawn, 5000)
+                gstars.clear()
+                goldPower = True
+                timer = 0
+                framesC = 0
+            for body in bodies:
+                if pygame.Rect(body).colliderect(gstar):
+                    gstars.clear()
+    #player blue
+    if start2 and not stop2:
+        move_counter2 += 1
+        if move_counter2 >= move_delay2:
+            move_counter2 = 0
+            prev_positions2 = [(head2.x, head2.y)]
+            for body2 in bodies2:
+                prev_positions2.append([body2[0], body2[1]])
+                
+            #move head
+            if direction2 == 'up':
+                head2.y -= speed2
+            if direction2 == 'down':
+                head2.y += speed2
+            if direction2 == 'left':
+                head2.x -= speed2
+            if direction2 == 'right':
+                head2.x += speed2
+            
+            #move body
+            for i in range(len(bodies2)):
+                bodies2[i][0], bodies2[i][1] = prev_positions2[i]
+        #collide star
+        for star in stars:
+            if head2.colliderect(star):
+                starReset()
+                bodies2.append([bodies2[-1][0], bodies2[-1][1], 18, 18])
+                score2 += 1
+            for body2 in bodies2:
+                if pygame.Rect(body2).colliderect(star):
+                    starReset()
+        for gstar in gstars:
+            if head2.colliderect(gstar):
+                pygame.time.set_timer(gSpawn, 0)
+                pygame.time.set_timer(gSpawn, 5000)
+                gstars.clear()
+                goldPower2 = True
+                timer = 0
+                framesC = 0
+            for body2 in bodies2:
+                if pygame.Rect(body2).colliderect(gstar):
+                    gstars.clear()
+              
+    for body in bodies:
+        for body2 in bodies2:
+            if (pygame.Rect(body).collidepoint(head.center) or pygame.Rect(head).colliderect(topBox) or pygame.Rect(head).colliderect(bottomBox) or pygame.Rect(head).colliderect(leftBox) or pygame.Rect(head).colliderect(rightBox) or pygame.Rect(head).colliderect(body2)) and not goldPower:
+                death = True
+    for body2 in bodies2:
+        for body in bodies:
+            if (pygame.Rect(body2).collidepoint(head2.center) or pygame.Rect(head2).colliderect(topBox) or pygame.Rect(head2).colliderect(bottomBox) or pygame.Rect(head2).colliderect(leftBox) or pygame.Rect(head2).colliderect(rightBox) or pygame.Rect(head2).colliderect(body)) and not goldPower2:
+                death2 = True
+    
+    
+    
+    #death
+    if death and not (death and death2):
+        blueWin = True
+        
+    if death2 and not (death and death2):
+        redWin = True
+    if (death and death2):
+        draw = True
+    
+    #win or draw
+    if blueWin:
+        stop = True
+        stop2 = True
+        screen.blit(fontB.render('BLUE WINS', True, BLUE), (280, 89))
+        #restart button
+        pygame.draw.rect(screen, GREEN, resButton)
+        screen.blit(font.render('⟳', True, BLACK), (392, 225))
+    if redWin:
+        stop = True
+        stop2 = True
+        screen.blit(fontB.render('RED WINS', True, RED), (280, 89))
+        #restart button
+        pygame.draw.rect(screen, GREEN, resButton)
+        screen.blit(font.render('⟳', True, BLACK), (392, 225))
+    if draw and not (redWin or blueWin):
+        stop = True
+        stop2 = True
+        screen.blit(fontB.render('DRAW', True, PURPLE), (280, 89))
+        #restart button
+        pygame.draw.rect(screen, GREEN, resButton)
+        screen.blit(font.render('⟳', True, BLACK), (392, 225))
+        
+    #score display
+    screen.blit(fontS.render(f'Red: {score}', True, RED), (135, 66))
+    screen.blit(fontS.render(f'Blue: {score2}', True, BLUE), (610, 66))
+    
+    
+    
+    pygame.display.flip()
+    clock.tick(60)
+pygame.quit()
