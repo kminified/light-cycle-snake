@@ -1,0 +1,1318 @@
+var x = 150;
+var y = 341;
+var stScreen = true;
+var levScreen = false;
+var easyGame = false;
+var velocity = 0;
+var gravity = 0.4;
+var jumpPower = -8.5;
+var speed = 3.5;
+var wPressed = false;
+var aPressed = false;
+var dPressed = false;
+var scX = -161; 
+var playerW = 35;
+var playerH = 60;
+var previousY = 0;
+var previousX = 0;
+var grounded = false;
+var health = 5;
+var rightTurn = true;
+var lasers = [];
+var ammo = 10;
+var fireCooldown = 0;
+var kickback = 0; 
+var legOffset = 0;
+var legDirection = 1;
+var barWidth = 58;
+var barHeight = 10;
+var insScreen = false;
+var arrowX = 394;
+var keyX = 1115;
+var keyY = 300;
+var keyDoorX = 1110;
+var keyDoorY = 318;
+var keyDoorW = 94;
+var keyDoorH = 246;
+var keyCollected = false;
+var winScreen = false;
+var winScreen2 = false;
+var medGame = false;
+var keyX2 = 1000;
+var keyY2 = 300;
+var keyDoorX2 = 1110;
+var keyDoorY2 = 318;
+var keyDoorW2 = 94;
+var keyDoorH2 = 246;
+var keyCollected2 = false;
+var reloading = false;
+var reloadTimer = 0;
+var homeButton = false;
+var hardGame = false;
+var keyCollected3 = false;
+var keyDoorX3 = 3001;
+var keyDoorY3 = 318;
+var keyDoorW3 = 94;
+var keyDoorH3 = 246;
+var keyX3 = 1872;
+var keyY3 = 202;
+var winScreen3 = false;
+var death = false;
+var angle = 0;
+var angle2 = 0;
+var rotateSpeed = 5;
+var confetti = [];
+var timer = 0;
+
+
+//level 1 platforms
+var platform1 = [
+    {x: 0, y: 497, w: 200, h: 20},
+    {x: 250, y: 453, w: 100, h: 20},
+    {x: 400, y: 379, w: 150, h: 20},
+    {x: 612, y: 318, w: 150, h: 20},
+    {x: 1312, y: 489, w: 125, h: 20},
+    {x: 1285, y: 344, w: 125, h: 20},
+    {x: 1460, y: 409, w: 116, h: 20},
+    {x: 1460, y: 277, w: 116, h: 20},
+    {x: 1645, y: 241, w: 250, h: 20},
+    {x: -185, y: -1, w: 17, h: 563},//border
+    {x: 819, y: 318, w: 150, h: 20},//key platform
+    {x: -185, y: 550, w: 3000, h: 50} //ground
+];
+
+//level 2 platforms
+var platform2 = [
+    {x: -162, y:550, w:3272, h:50}, //ground
+    {x: -162, y:1, w:17, h:563}, //border 
+    {x: 83, y:472, w:150, h:20},
+    {x: 321, y:403, w:150, h:20},
+    {x: 632, y:403, w:150, h:20},
+    {x: 822, y:323, w:150, h:20},
+    {x: 1037, y:416, w:150, h:20},
+    {x: 1238, y:337, w:101, h:101},
+    {x: 1300, y:337, w:258, h:20},
+    {x: 1674, y:283, w:159, h:51},
+    {x: 1943, y:283, w:72, h:72},
+    {x: 2254, y:481, w:72, h:72},
+    {x: 2389, y:423, w:72, h:21},
+    {x: 2389, y: 337, w:72, h:5},
+    {x: 2572, y: 337, w:206, h:21},
+    {x: 2871, y: 275, w:228, h:21},
+];
+
+//level 3 platforms
+var platform3 = [
+    {x: -162, y:550, w:4830, h:50}, //ground
+    {x: -162, y: 1, w: 17, h: 563},//border
+    {x: 97, y:495, w:91, h:57},
+    {x: 280, y:416, w:91, h:17},
+    {x: 517, y:416, w:91, h:17},
+    {x: 756, y:416, w:91, h:17},
+    {x: 756, y:331, w:91, h:3},
+    {x: 905, y:173, w:164, h:381},
+    {x: 592, y:261, w:91, h:3},
+    {x: 736, y:204, w:16, h:3},
+    {x: 1070, y:173, w:10, h:10},
+    {x: 1080, y:183, w:10, h:10},
+    {x: 1090, y:193, w:10, h:10},
+    {x: 1100, y:203, w:10, h:10},
+    {x: 1110, y:213, w:10, h:10},
+    {x: 1120, y:223, w:10, h:10},
+    {x: 1130, y:233, w:10, h:10},
+    {x: 1140, y:243, w:10, h:10},
+    {x: 1150, y:253, w:146, h:10},
+    {x: 1306, y:298, w:88, h:10},
+    {x: 1418, y:356, w:88, h:10},
+    {x: 1779, y:513, w:576, h:38},
+    {x: 1818, y:476, w:472, h:38},
+    {x: 1861, y:439, w:477, h:38},
+    {x: 2414, y:397, w:100, h:8},
+    {x: 2562, y:305, w:100, h:21},
+    {x: 2370, y:318, w:3, h:12},
+    {x: 2460, y:282, w:1, h:1},
+    {x: 2810, y:305, w:100, h:21},
+    {x: 3738, y:305, w:471, h:254},
+    {x: 3641, y:381, w:100, h:179},
+    {x: 3542, y:465, w:100, h:179},
+];
+
+//level 1 monsters
+var monster1 = [
+        {x: 270, y: 413, w: 30, h: 30, speed: 1, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 420, y: 349, w: 30, h: 30, speed: 1, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1517, y: 349, w: 30, h: 30, speed: 1, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1585, y: 349, w: 30, h: 30, speed: 1, velocityY: 0, grounded: false, hitCooldown: 0},
+        ];
+
+//level 2 monsters
+var monster2 = [
+        {x: 413, y: 341, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 333, y: 341, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 893, y: 282, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1067, y: 371, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1464, y: 282, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1291, y: 282, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1949, y: 220, w: 60, h: 60, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1949, y: 220, w: 80, h: 80, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 1949, y: 220, w: 100, h: 100, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 2426, y: 282, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        {x: 2627, y: 282, w: 40, h: 40, speed: 1.5, velocityY: 0, grounded: false, hitCooldown: 0},
+        ];
+        
+//level 3 monsters
+var monster3 = [
+            {x: 308, y: 341, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 629, y: 202, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 793, y: 286, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 944, y: 110, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 1201, y: 205, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 1201, y: 205, w: 70, h: 70, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 1449, y: 300, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 1921, y: 378, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 2160, y: 378, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 2477, y: 326, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 2604, y: 245, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 2833, y: 237, w: 50, h: 50, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 100, h: 100, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 150, h: 150, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 200, h: 200, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 250, h: 250, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 300, h: 300, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+            {x: 3500, y: 258, w: 350, h: 350, speed: 2, velocityY: 0, grounded: false, hitCooldown: 0},
+        ];
+        
+//keep the monsters
+var cloneArray = function(arr) {
+    var copy = [];
+    for (var i = 0; i < arr.length; i++) {
+        var obj = arr[i];
+        var newObj = {};
+        for (var key in obj) {
+            newObj[key] = obj[key];
+        }
+        copy.push(newObj);
+    }
+    return copy;
+};
+
+
+var monster1Start = cloneArray(monster1);
+var monster2Start = cloneArray(monster2);
+var monster3Start = cloneArray(monster3);
+
+function createConfetti(x, y) {
+    return {
+        x: x,
+        y: y,
+        size: random(5, 10),
+        speed: random(3, 5),
+        color: color(random(255), random(255), random(255))
+    };
+}
+
+//player
+function personSpawn() {
+    //head
+    fill(191, 0, 0);
+    strokeWeight(1);
+    ellipse(x+10, y-1, playerW, playerH-25);
+    
+    //eyes
+    stroke(0);
+    strokeWeight(4);
+    fill(255, 255, 255);
+    ellipse(x+3, y-7, 11, 9);
+    ellipse(x+16, y-7, 11, 9);
+
+    //body
+    strokeWeight(1);
+    fill(0, 0, 0);
+    rect(x-1, y+10, 20, playerH-30, 5);
+
+    //legs
+    fill(0, 0, 0);
+    rect(x-1, y + playerH - 23, 8, 22);
+    rect(x+11, y + playerH - 23, 8, 22);
+
+    
+    if(rightTurn){
+        //arm
+        noStroke();
+        fill(191, 0, 0);
+        rect(x+20-kickback, y+20, 18, 10);
+
+        //blaster
+        stroke(0);
+        strokeWeight(2);
+        fill(191, 0, 0);
+        rect(x+38-kickback, y+15, 44, 8);
+        fill(0, 0, 0);
+        rect(x+38-kickback, y+23, 16, 9);
+    } else {
+        //arm
+        noStroke();
+        fill(191, 0, 0);
+        rect(x-19+kickback, y+20, 18, 10);
+
+        //blaster
+        stroke(0);
+        strokeWeight(2);
+        fill(191, 0, 0);
+        rect(x-64+kickback, y+15, 44, 8);
+        fill(0);
+        rect(x-36+kickback, y+23, 16, 9);
+    }
+    stroke(0, 0, 0);
+    //health bar
+    strokeWeight(3);
+    fill(0);
+    rect(x + playerW/2 - barWidth/2 -7, y - 33, barWidth, barHeight);
+    
+    var hpWidth = (health/5) * barWidth;
+    var barColor;
+    if(health >= 4) { barColor = [0,255,0]; }
+    else if(health === 3) { barColor = [255,255,0]; }
+    else if(health === 2) { barColor = [255,165,0]; }
+    else { barColor = [255,0,0]; }
+    
+    fill(barColor[0], barColor[1], barColor[2]);
+    rect(x + playerW/2 - barWidth/2 -7, y - 33, hpWidth, barHeight);
+}
+
+//start screen
+function startScreen() {
+    background(82, 163, 255);
+    //play button
+    fill(13, 255, 0);
+    rect(231, 219, 150, 100, 20);
+    fill(0);
+    textSize(50);
+    text("Play", 258, 285);
+    
+    //rotating objects
+    stroke(0);
+    pushMatrix();
+    translate(146, 253);
+    rotate(angle);
+    strokeWeight(2);
+    fill(191, 0, 0);
+    rect(-22, -4, 44, 8);
+    fill(0);
+    rect(-22, 4.2, 16, 9);
+    popMatrix();
+    
+    stroke(0);
+    pushMatrix();
+    translate(146, 387);
+    rotate(angle);
+    strokeWeight(2);
+    fill(191, 0, 0);
+    rect(-22, -4, 44, 8);
+    fill(0);
+    rect(-22, 4.2, 16, 9);
+    popMatrix();
+    
+    pushMatrix();
+    translate(475, 253);
+    rotate(angle2);
+    strokeWeight(2);
+    fill(191, 0, 0);
+    rect(-22, -4, 44, 8);
+    fill(0);
+    rect(6, 4.2, 16, 9);
+    popMatrix();
+    
+    pushMatrix();
+    translate(475, 387);
+    rotate(angle2);
+    strokeWeight(2);
+    fill(191, 0, 0);
+    rect(-22, -4, 44, 8);
+    fill(0);
+    rect(6, 4.2, 16, 9);
+    popMatrix();
+    
+    //title
+    textFont(createFont("fantasy"));
+    textSize(50);
+    text("Deadpool Platformer", 91, 129);
+    textFont("serif");
+    
+    //click play
+    if(mouseIsPressed && mouseX>232 && mouseX<382 && mouseY>221 && mouseY<321 && stScreen) {
+        levScreen = true;
+        stScreen = false;
+        insScreen = false;
+    }
+    
+    //instruction button
+    fill(234, 255, 0);
+    rect(231, 347, 150, 100, 20);
+    fill(0);
+    textSize(25);
+    text("Instructions", 244, 407);
+    
+    //click instructions
+    if(mouseIsPressed && mouseX>232 && mouseX<382 && mouseY>348 && mouseY<449 && stScreen){
+        insScreen = true;
+        stScreen = false;
+    }
+}
+
+//instruction screen
+function instructionScreen(){
+    background(82, 163, 255);
+    fill(0);
+    textSize(30);
+    text("WAD to move", 50, 75);
+    text("Click to shoot lasers", 50, 140);
+    text("Touch the yellow key to open the door", 50, 216);
+    text("Reach the exit to win", 50, 296); 
+    text("Shoot the monsters, dont get hit by them", 50, 368);
+    text("Press R to reload if you have 0 ammo", 50, 443);
+    fill(0, 0, 0);
+    rect(0, 0, 92, 32);
+    fill(255, 0, 0);
+    
+    //back
+    text("Back", 14, 24);
+    if(mouseIsPressed && mouseX>0 && mouseX<93 && mouseY>0 && mouseY<33 && insScreen){
+        stScreen = true;
+    }
+}
+
+//level screen
+function levelScreen() {
+    //level 1
+    background(82, 163, 255);
+    fill(27, 207, 36, 200);
+    rect(42, 52, 100, 100, 10);
+    fill(0);
+    textSize(30);
+    text("Level 1", 45, 113);
+    
+    //level 2
+    fill(217, 255, 0, 200);
+    rect(182, 52, 100, 100, 10);
+    fill(0);
+    textSize(30);
+    text("Level 2", 185, 113);
+    
+    //level 3
+    fill(255, 0, 0, 200);
+    rect(322, 52, 100, 100, 10);
+    fill(0);
+    textSize(30);
+    text("Level 3", 325, 113);
+
+    //click level 1
+    if(mouseIsPressed && mouseX > 40 && mouseX < 143 && mouseY > 53 && mouseY < 151) {
+        easyGame = true;
+        homeButton = false;
+        scX = -161;
+        ammo = 10;
+        health = 5;
+        keyCollected = false;
+        winScreen = false;
+        monster1 = cloneArray(monster1Start);
+        levScreen = false;
+        timer = 0;
+    }
+    
+    //click level 2
+    if(mouseIsPressed && mouseX > 183 && mouseX < 284 && mouseY > 55 && mouseY < 151) {
+        medGame = true;
+        homeButton = false;
+        scX = -161;
+        ammo = 10;
+        health = 5;
+        keyCollected2 = false;
+        winScreen2 = false;
+        monster2 = cloneArray(monster2Start);
+        levScreen = false;
+        timer = 0;
+    }
+    
+    //click level 3
+    if(mouseIsPressed && mouseX > 323 && mouseX < 423 && mouseY > 55 && mouseY < 151) {
+        hardGame = true;
+        homeButton = false;
+        scX = -161;
+        ammo = 10;
+        health = 5;
+        winScreen3 = false;
+        keyCollected3 = false;
+        monster3 = cloneArray(monster3Start);
+        levScreen = false;
+        timer = 0;
+    }
+    
+    //back
+    fill(0, 0, 0);
+    rect(0, 0, 92, 32);
+    fill(255, 0, 0);
+    textSize(30);
+    text("Back", 14, 24);
+    if(mouseIsPressed && mouseX>0 && mouseX<93 && mouseY>0 && mouseY<33 && levScreen){
+        stScreen = true;
+        levScreen = false;
+    }
+    
+}
+
+//level 1
+function ezGame() {
+    background(82, 163, 255);
+    
+
+    //velocity and gravity
+    previousX = x + scX; 
+    previousY = y;
+
+    velocity += gravity;
+    y += velocity;
+    grounded = false;
+    fill(0);
+    
+    //movement
+    if(dPressed) { scX += speed; rightTurn = true; }
+    if(aPressed) { scX -= speed; rightTurn = false; }
+
+    //platform collision
+    for (var i=0; i<platform1.length; i++) {
+        fill(0);
+        var p = platform1[i];
+        rect(p.x - scX, p.y, p.w, p.h);
+
+        var playerLeft = x + scX;
+        var playerRight = x + scX + playerW;
+        var playerTop = y;
+        var playerBottom = y + playerH;
+
+        var platform1Left = p.x;
+        var platform1Right = p.x + p.w;
+        var platform1Top = p.y;
+        var platform1Bottom = p.y + p.h;
+
+        var wasAbove = previousY + playerH <= platform1Top;
+        var wasBelow = previousY >= platform1Bottom;
+        var wasLeft = previousX + playerW <= platform1Left;
+        var wasRight = previousX >= platform1Right;
+
+        if(playerRight > platform1Left && playerLeft < platform1Right && playerBottom > platform1Top && playerTop < platform1Bottom) {
+            if(wasAbove){
+                y = platform1Top - playerH; velocity = 0; grounded = true;
+            }
+            else if(wasBelow){ y = platform1Bottom; velocity = 0.5; }
+            else if(wasLeft){ scX -= speed; }
+            else if(wasRight){ scX += speed; }
+        }
+        //door
+    if(!keyCollected){
+        fill(139, 69, 19);
+        rect(keyDoorX - scX, keyDoorY-152, keyDoorW, keyDoorH +137);
+        fill(97, 166, 235, 200);
+        rect(keyDoorX -scX+14, keyDoorY-132, keyDoorW+-68, keyDoorH+-113);
+        rect(keyDoorX -scX+14, keyDoorY+48, keyDoorW+-68, keyDoorH+-113);
+        rect(keyDoorX -scX+54, keyDoorY+48, keyDoorW+-68, keyDoorH+-113);
+        rect(keyDoorX -scX+54, keyDoorY+-132, keyDoorW+-68, keyDoorH+-113);
+    }
+    }
+
+    //key
+    if(!keyCollected){
+        fill(255, 215, 0);
+        image(getImage("cute/Key"), keyX+-scX+-231, keyY+-23, 40, 50);
+    }
+
+    //touching  key
+    if(!keyCollected && x + playerW > keyX+-scX+-221 && x< keyX-scX+-205&& y+playerH>keyY+-23 && y + playerH < keyY+23){
+        keyCollected = true;
+    }
+    
+    //door collision
+if(!keyCollected){
+    if(x + scX + playerW > keyDoorX &&
+       x + scX < keyDoorX + keyDoorW &&
+       y + playerH > keyDoorY &&
+       y < keyDoorY + keyDoorH){
+
+        if(dPressed){ scX -= speed; }
+        if(aPressed){ scX += speed; }
+    }
+}
+    //escape
+    fill(124, 0, 207);
+    arc(1853+-scX, 241, 86, 257, 181, 360);
+    fill(21, 0, 255);
+    arc(1853+-scX, 241, 48, 156, 181, 360);
+    fill(0);
+    ellipse(1854+-scX, 216, 30, 30);
+        if (x+playerW>1830+-scX && x+playerW<1917+-scX && y+playerH<242){
+            winScreen = true;
+        }
+    
+
+    //lasers
+    for(var i = lasers.length - 1; i >= 0; i--){
+        var l = lasers[i];
+        l.x += l.dx;
+        l.y += l.dy;
+
+        for (var p = 0; p < platform1.length; p++) {
+            var P = platform1[p];
+            if (l.x > P.x && l.x < P.x + P.w && l.y > P.y && l.y < P.y + P.h){
+                lasers.splice(i, 1);
+                break;
+            }
+        }
+
+        for(var j = monster1.length - 1; j >= 0; j--){
+            var m = monster1[j];
+            if(l.x > m.x && l.x < m.x + m.w && l.y > m.y && l.y < m.y + m.h){
+                monster1.splice(j, 1);
+                lasers.splice(i, 1);
+                break;
+            }
+        }
+
+        if(l.x - scX > 500 || l.x - scX < -50 || l.y < -50 || l.y > 650){
+            lasers.splice(i, 1);
+        }
+
+        noStroke();
+        fill(188, 191, 17);
+        ellipse(l.x - scX, l.y, l.w+5, l.h+5);
+    }
+
+    //monsters follow player
+    for (var i = 0; i < monster1.length; i++) {
+    var m = monster1[i];
+    var screenX = m.x - scX;
+    var onScreen = (screenX + m.w > 0 && screenX < 600 &&
+                    m.y + m.h > 0 && m.y < 600);
+
+    // only follow player if on screen
+    if (onScreen) {
+        if (m.x + m.w/2 < x + scX + playerW/2) { m.x += m.speed; }
+        if (m.x + m.w/2 > x + scX + playerW/2) { m.x -= m.speed; }
+        if (m.y + m.h/2 < y + playerH/2) { m.y += m.speed; }
+        if (m.y + m.h/2 > y + playerH/2) { m.y -= m.speed; }
+    }
+
+    // draw only if on screen
+    if (onScreen) {
+        image(getImage("avatars/marcimus-red"), screenX, m.y, m.w, m.h);
+    }
+
+    if (m.hitCooldown > 0) { m.hitCooldown--; }
+
+    if (x + playerW > screenX && x < screenX + m.w &&
+        y + playerH > m.y && y < m.y + m.h) {
+
+        if (m.hitCooldown === 0 && health > 0) {
+            health--;
+            y -= 5;
+            velocity = jumpPower;
+            m.hitCooldown = 30;
+        }
+    }
+}
+
+    //arrows
+    noStroke();
+    fill(13, 255, 0);
+    rect(arrowX+-scX+-282, 300, 80, 15);
+    triangle(arrowX+-scX+-205, 290, arrowX+-scX+-205, 327, arrowX+-scX+-165, 310);
+    
+    //gun animation
+    if(kickback > 0) { kickback -= 1; }
+    
+    //gun cooldown
+    if(fireCooldown > 0) {fireCooldown--;}
+    
+    //ammo text
+    fill(0, 0, 0);
+    textSize(30);
+    text("Ammo: "+ammo, 33, 62);
+    personSpawn();
+    
+    //home button
+    fill(230, 0, 0);
+    rect(500, 20, 75, 50);
+    fill(0);
+    text("Back", 504, 55);
+    if (mouseIsPressed && mouseX>502 && mouseX<575 && mouseY>23 && mouseY<71 && !winScreen){
+        homeButton = true;
+    }
+    if(homeButton){
+        stScreen = true;
+        easyGame = false;
+    }
+    
+    //win screen
+    if(winScreen){
+        background(0, 166, 255);
+        fill(0, 255, 21);
+        textSize(100);
+        text("You win", 94, 123);
+        fill(255, 0, 0);
+        rect(325, 300, 154, 50);
+        fill(0);
+        textSize(30);
+        text("Level 2 ->", 337, 334);
+        if(mouseIsPressed && mouseX>325 && mouseX<476 && mouseY>302 && mouseY<351){
+            medGame = true;
+            easyGame = false;
+            ammo = 10;
+            scX = -161;
+            health = 5;
+            winScreen = false;
+            keyCollected2 = false;
+            monster2 = cloneArray(monster2Start);
+            levScreen = false;
+            timer = 0;
+        }
+        fill(255, 0, 0);
+        rect(96, 300, 80, 50);
+        fill(0);
+        text("Back", 103, 334);
+        if(mouseIsPressed && mouseX>97 && mouseX<177 && mouseY>304 && mouseY<352){
+            easyGame = false;
+            winScreen = false;
+            levScreen = true;
+        }
+    }
+    
+    
+    
+}
+
+//medium game
+function mediumGame(){
+    background(82, 163, 255);
+    previousX = x +scX; 
+    previousY = y;
+
+    velocity += gravity;
+    y += velocity;
+    grounded = false;
+    fill(0);
+    
+    if(dPressed) { scX += speed; rightTurn = true; }
+    if(aPressed) { scX -= speed; rightTurn = false; }
+    //platform collision
+    for (var i=0; i<platform2.length; i++) {
+        fill(0); 
+        var p = platform2[i];
+        rect(p.x - scX, p.y, p.w, p.h);
+
+        var playerLeft = x + scX;
+        var playerRight = x + scX + playerW;
+        var playerTop = y;
+        var playerBottom = y + playerH;
+
+        var platform2Left = p.x;
+        var platform2Right = p.x + p.w;
+        var platform2Top = p.y;
+        var platform2Bottom = p.y + p.h;
+
+        var wasAbove = previousY + playerH <= platform2Top;
+        var wasBelow = previousY >= platform2Bottom;
+        var wasLeft = previousX + playerW <= platform2Left;
+        var wasRight = previousX >= platform2Right;
+
+        if(playerRight > platform2Left && playerLeft < platform2Right && playerBottom > platform2Top && playerTop < platform2Bottom) {
+            if(wasAbove){
+                y = platform2Top - playerH; velocity = 0; grounded = true;
+            }
+            else if(wasBelow){ y = platform2Bottom; velocity = 0.5; }
+            else if(wasLeft){ scX -= speed; }
+            else if(wasRight){ scX += speed; }
+        }
+        if(!keyCollected2){
+        fill(139, 69, 19);
+        rect(keyDoorX2 - scX+1085, keyDoorY2-152, keyDoorW2, keyDoorH2 +137);
+        fill(97, 166, 235, 200);
+        rect(keyDoorX2 - scX+1098, keyDoorY2-125, keyDoorW2-68, keyDoorH2 +-113);
+        rect(keyDoorX2 - scX+1139, keyDoorY2-125, keyDoorW2-68, keyDoorH2 +-113);
+        rect(keyDoorX2 - scX+1139, keyDoorY2+72, keyDoorW2-68, keyDoorH2 +-113);
+        rect(keyDoorX2 - scX+1098, keyDoorY2+72, keyDoorW2-68, keyDoorH2 +-113);
+    }
+    }
+    if(!keyCollected2){
+        fill(255, 215, 0);
+        image(getImage("cute/Key"), keyX2+-scX+964, keyY2+-72, 40, 50);
+    }
+
+    //key collision
+    if(!keyCollected2 && x + playerW > keyX2+-scX+980 && x< keyX2-scX+1019 && y+playerH>keyY2+-23 && y + playerH < keyY2+23){
+        keyCollected2 = true;
+    }
+    
+    //door collision
+if(!keyCollected2){
+    if(x + scX + playerW > keyDoorX2+1091 &&
+       x + scX < keyDoorX + keyDoorW2+1129 &&
+       y + playerH > keyDoorY2 &&
+       y < keyDoorY2 + keyDoorH2){
+
+        if(dPressed){ scX -= speed; }
+        if(aPressed){ scX += speed; }
+    }
+}
+    //escape 2
+    fill(124, 0, 207);
+    arc(2982+-scX, 276, 86, 257, 181, 360);
+    fill(21, 0, 255);
+    arc(2982+-scX, 276, 48, 156, 181, 360);
+    fill(0);
+    ellipse(2982+-scX, 245, 30, 30);
+    if (x+playerW>2940+-scX && y+playerH<300){
+        winScreen2 = true;
+    }
+    //lasers
+    for(var i = lasers.length - 1; i >= 0; i--){
+        var l = lasers[i];
+        l.x += l.dx;
+        l.y += l.dy;
+
+        for (var p = 0; p < platform2.length; p++) {
+            var P = platform2[p];
+            if (l.x > P.x && l.x < P.x + P.w && l.y > P.y && l.y < P.y + P.h){
+                lasers.splice(i, 1);
+                break;
+            }
+            
+        }
+        for(var j = monster2.length - 1; j >= 0; j--){
+            var m = monster2[j];
+            if(l.x > m.x && l.x < m.x + m.w && l.y > m.y && l.y < m.y + m.h){
+                monster2.splice(j, 1);
+                lasers.splice(i, 1);
+                break;
+            }
+        }
+        if(l.x - scX > 500 || l.x - scX < -50 || l.y < -50 || l.y > 650){
+            lasers.splice(i, 1);
+        }
+        
+        
+        noStroke();
+        fill(188, 191, 17);
+        ellipse(l.x - scX, l.y, l.w+5, l.h+5);
+        
+    }
+    //monsters follow player
+    for (var i = 0; i < monster2.length; i++) {
+    var m = monster2[i];
+    var screenX = m.x - scX;
+    var onScreen = (screenX + m.w > 0 && screenX < 600 &&
+                    m.y + m.h > 0 && m.y < 600);
+
+    //only follow player if on screen
+    if (onScreen) {
+        if (m.x + m.w/2 < x + scX + playerW/2) { m.x += m.speed; }
+        if (m.x + m.w/2 > x + scX + playerW/2) { m.x -= m.speed; }
+        if (m.y + m.h/2 < y + playerH/2) { m.y += m.speed; }
+        if (m.y + m.h/2 > y + playerH/2) { m.y -= m.speed; }
+    }
+
+    //monster
+    if (onScreen) {
+        image(getImage("avatars/marcimus-orange"), screenX, m.y, m.w, m.h);
+    }
+
+    
+    if (m.hitCooldown > 0) { m.hitCooldown--; }
+
+    if (x + playerW > screenX && x < screenX + m.w &&
+        y + playerH > m.y && y < m.y + m.h) {
+
+        if (m.hitCooldown === 0 && health > 0) {
+            health--;
+            y -= 5;
+            velocity = jumpPower;
+            m.hitCooldown = 30;
+        }
+    }
+}
+
+
+    if(kickback > 0) { kickback -= 1; }
+
+    if(fireCooldown > 0) {fireCooldown--;}
+    
+    //home button
+    fill(230, 0, 0);
+    rect(500, 20, 75, 50);
+    fill(0);
+    textSize(30);
+    text("Back", 504, 55);
+    if (mouseIsPressed && mouseX>502 && mouseX<575 && mouseY>23 && mouseY<71 && !winScreen2){
+        homeButton = true;
+    }
+    if(homeButton){
+        stScreen = true;
+        easyGame = false;
+        medGame = false;
+    }
+
+    
+    fill(0, 0, 0);
+    textSize(30);
+    text("Ammo: "+ammo, 33, 62);
+    personSpawn();
+    if(winScreen2){
+        background(0, 166, 255);
+        fill(0, 255, 21);
+        textSize(100);
+        text("You win", 94, 123);
+        fill(255, 0, 0);
+        rect(325, 300, 154, 50);
+        fill(0);
+        textSize(30);
+        text("Level 3 ->", 337, 334);
+        if(mouseIsPressed && mouseX>325 && mouseX<476 && mouseY>302 && mouseY<351){
+            medGame = false;
+            hardGame = true;
+            ammo = 10;
+            scX = -161;
+            health = 5;
+            winScreen2 = false;
+            keyCollected3 = false;
+            monster3 = cloneArray(monster3Start);
+            levScreen = false;
+            timer = 0;
+        }
+        fill(255, 0, 0);
+        rect(96, 300, 80, 50);
+        fill(0);
+        text("Back", 103, 334);
+        if(mouseIsPressed && mouseX>97 && mouseX<177 && mouseY>304 && mouseY<352){
+            easyGame = false;
+            medGame = false;
+            winScreen2 = false;
+            levScreen = true;
+        }
+    }
+    
+    
+    
+    
+}
+
+function hrdGame(){
+    background(82, 163, 255);
+    if(x+scX+playerW>2942){
+        background(0, 19, 186);
+    }
+    
+    previousX = x + scX; 
+    previousY = y;
+
+    velocity += gravity;
+    y += velocity;
+    grounded = false;
+    
+    if(dPressed) { scX += speed; rightTurn = true; }
+    if(aPressed) { scX -= speed; rightTurn = false; }
+    
+    //platform collision
+    for (var i=0; i<platform3.length; i++) {
+        fill(0);
+        var p = platform3[i];
+        rect(p.x - scX, p.y, p.w, p.h);
+
+        var playerLeft = x + scX;
+        var playerRight = x + scX + playerW;
+        var playerTop = y;
+        var playerBottom = y + playerH;
+
+        var platform3Left = p.x;
+        var platform3Right = p.x + p.w;
+        var platform3Top = p.y;
+        var platform3Bottom = p.y + p.h;
+
+        var wasAbove = previousY + playerH <= platform3Top;
+        var wasBelow = previousY >= platform3Bottom;
+        var wasLeft = previousX + playerW <= platform3Left;
+        var wasRight = previousX >= platform3Right;
+
+        if(playerRight > platform3Left && playerLeft < platform3Right && playerBottom > platform3Top && playerTop < platform3Bottom) {
+            if(wasAbove){
+                y = platform3Top - playerH; velocity = 0; grounded = true;
+            }
+            else if(wasBelow){ y = platform3Bottom; velocity = 0.5; }
+            else if(wasLeft){ scX -= speed; }
+            else if(wasRight){ scX += speed; }
+        }
+    }
+    //door
+    if(!keyCollected3){
+        fill(139, 69, 19);
+        rect(keyDoorX3 - scX, keyDoorY3-152, keyDoorW3, keyDoorH3 +137);
+        fill(97, 166, 235, 200);
+        rect(keyDoorX3 -scX+14, keyDoorY3-132, keyDoorW3+-68, keyDoorH3+-113);
+        rect(keyDoorX3 -scX+14, keyDoorY3+48, keyDoorW3+-68, keyDoorH3+-113);
+        rect(keyDoorX3 -scX+54, keyDoorY3+48, keyDoorW3+-68, keyDoorH3+-113);
+        rect(keyDoorX3 -scX+54, keyDoorY3+-132, keyDoorW3+-68, keyDoorH3+-113);
+    }
+    if(!keyCollected3){
+        fill(255, 215, 0);
+        image(getImage("cute/Key"), keyX3+-scX+964, keyY3+-72, 40, 50);
+    }
+    //key collision
+    if(!keyCollected3 && x + playerW > keyX3+-scX+980 && x< keyX3-scX+997 && y+playerH>keyY3+-23 && y + playerH < keyY3+30){
+        keyCollected3 = true;
+    }
+    
+    //door collision
+if(!keyCollected3){
+    if(x + scX + playerW > keyDoorX3 &&
+       x + scX < keyDoorX + keyDoorW3+2000 &&
+       y + playerH > keyDoorY3 &&
+       y < keyDoorY3 + keyDoorH3){
+
+        if(dPressed){ scX -= speed; }
+        if(aPressed){ scX += speed; }
+    }
+}
+    if(kickback > 0) { kickback -= 1; }
+    
+
+    if(fireCooldown > 0) {fireCooldown--;}
+    
+    fill(0, 0, 0);
+    textSize(30);
+    text("Ammo: "+ammo, 33, 62);
+    
+    //escape 3
+    fill(124, 0, 207);
+    arc(4164+-scX, 305, 86, 257, 181, 360);
+    fill(21, 0, 255);
+    arc(4164+-scX, 305, 48, 156, 181, 360);
+    fill(0);
+    ellipse(4164+-scX, 269, 30, 30);
+    if (x+playerW>4128+-scX){
+        winScreen3 = true;
+    }
+    
+    //lasers
+    for(var i = lasers.length - 1; i >= 0; i--){
+        var l = lasers[i];
+        l.x += l.dx;
+        l.y += l.dy;
+
+        for (var p = 0; p < platform3.length; p++) {
+            var P = platform3[p];
+            if (l.x > P.x && l.x < P.x + P.w && l.y > P.y && l.y < P.y + P.h){
+                lasers.splice(i, 1);
+                break;
+            }
+            
+        }
+        for(var j = monster3.length - 1; j >= 0; j--){
+            var m = monster3[j];
+            if(l.x > m.x && l.x < m.x + m.w && l.y > m.y && l.y < m.y + m.h){
+                monster3.splice(j, 1);
+                lasers.splice(i, 1);
+                break;
+            }
+        }
+        
+        if(l.x - scX > 600 || l.x - scX < -600 || l.y < -600 || l.y > 650){
+            lasers.splice(i, 1);
+        }
+        
+        
+        noStroke();
+        fill(188, 191, 17);
+        ellipse(l.x - scX, l.y, l.w+5, l.h+5);
+        
+    }
+    
+    //monsters follow player
+    for (var i = 0; i < monster3.length; i++) {
+    var m = monster3[i];
+    var screenX = m.x - scX;
+    var onScreen = (screenX + m.w > 0 && screenX < 600 &&
+                    m.y + m.h > 0 && m.y < 600);
+
+    //only follow player if on screen
+    if (onScreen) {
+        if (m.x + m.w/2 < x + scX + playerW/2) { m.x += m.speed; }
+        if (m.x + m.w/2 > x + scX + playerW/2) { m.x -= m.speed; }
+        if (m.y + m.h/2 < y + playerH/2) { m.y += m.speed; }
+        if (m.y + m.h/2 > y + playerH/2) { m.y -= m.speed; }
+    }
+
+    // draw only if on screen
+    if (onScreen) {
+        image(getImage("avatars/marcimus-purple"), screenX, m.y, m.w, m.h);
+    }
+
+    if (m.hitCooldown > 0) { m.hitCooldown--; }
+
+    if (x + playerW > screenX && x < screenX + m.w &&
+        y + playerH > m.y && y < m.y + m.h) {
+
+        if (m.hitCooldown === 0 && health > 0) {
+            health--;
+            y -= 5;
+            velocity = jumpPower;
+            m.hitCooldown = 30;
+        }
+    }
+}
+
+    //home button
+    fill(230, 0, 0);
+    rect(500, 20, 75, 50);
+    fill(0);
+    textSize(30);
+    text("Back", 504, 55);
+    if (mouseIsPressed && mouseX>502 && mouseX<575 && mouseY>23 && mouseY<71 && !winScreen3){
+        homeButton = true;
+    }
+    if(homeButton){
+        stScreen = true;
+        easyGame = false;
+        medGame = false;
+        hardGame = false;
+    }
+    
+    personSpawn();
+    if(winScreen3){
+        background(0, 166, 255);
+        fill(0, 255, 21);
+        textSize(100);
+        text("You win", 94, 123);
+        fill(255, 0, 0);
+        rect(96, 300, 80, 50);
+        fill(0);
+        textSize(30);
+        text("Back", 103, 334);
+        if(mouseIsPressed && mouseX>97 && mouseX<177 && mouseY>304 && mouseY<352){
+            easyGame = false;
+            medGame = false;
+            hardGame = false;
+            winScreen3 = false;
+            levScreen = true;
+            timer = 0;
+        }
+    }
+}
+function keyPressed() {
+    if(keyCode === 68){ dPressed = true; }
+    if(keyCode === 65){ aPressed = true; }
+    if(keyCode === 87){ wPressed = true; }
+    
+    
+    //reload
+    if(keyCode === 82 && !reloading && ammo === 0){ 
+        reloading = true;
+        reloadTimer = 120; 
+    }
+}
+
+function keyReleased() {
+    if(keyCode === 68){ dPressed = false; }
+    if(keyCode === 65){ aPressed = false; }
+    if(keyCode === 87){ wPressed = false; }
+}
+
+function mousePressed() {
+    //shooting
+    if((easyGame || medGame || hardGame) && ammo > 0 && fireCooldown === 0){
+
+        if(ammo > 0 && fireCooldown === 0){
+
+            var startX;
+            var startY = y + 20;
+            if(rightTurn){ startX = x + 38 + 44; } else { startX = x - 64; }
+
+            var dx = mouseX - startX;
+            var dy = mouseY - startY;
+            var length = sqrt(dx*dx + dy*dy);
+            dx /= length; 
+            dy /= length;
+
+            lasers.push({
+                x: startX + scX,
+                y: startY,
+                dx: dx * 10,
+                dy: dy * 10,
+                w: 8,
+                h: 4
+            });
+
+            ammo--;
+            fireCooldown = 15;
+            kickback = 5;
+            
+        }
+    }
+}
+
+//death screen
+function deathScreen(){
+    background(0, 0, 0);
+    timer = 0;
+    fill(186, 0, 0);
+    textSize(100);
+    text("You died", 107, 147);
+    fill(0);
+    textSize(70);
+    text("🔄", 371, 377);
+    if(mouseIsPressed && mouseX>384 && mouseX<453 && mouseY>317 && mouseY<386){
+        ammo = 10;
+        scX = -161;
+        keyCollected3 = false;
+        keyCollected2 = false;
+        keyCollected = false;
+        monster3 = cloneArray(monster3Start);
+        monster2 = cloneArray(monster2Start);
+        monster1 = cloneArray(monster1Start);
+        death = false;
+        health = 5;
+    }
+    fill(255, 0, 0);
+    rect(105, 320, 75, 50);
+    fill(0);
+    textSize(30);
+    text("Back", 110, 354);
+    if(mouseIsPressed && mouseX>107 && mouseX<179 && mouseY>321 && mouseY<369){
+        levScreen = true;
+        death = false;
+        easyGame = false;
+        medGame = false;
+        hardGame = false;
+    }
+}
+
+draw = function() {
+    //change screens
+    startScreen();
+    if((easyGame || medGame || hardGame) && wPressed && grounded){
+        velocity = jumpPower;
+        grounded = false;
+    }
+
+    if(levScreen){
+        levelScreen();
+    }
+    if(stScreen){
+        startScreen();
+    }
+    if(easyGame){ 
+        ezGame(); 
+    }
+    if(insScreen){
+        instructionScreen();
+    }
+    if(stScreen){
+        startScreen();
+    }
+    if(medGame){
+        mediumGame();
+    }
+    
+    if(hardGame){
+        hrdGame();
+    }
+    if(death){
+        deathScreen();
+    }
+    
+    //death
+    if (health === 0 && easyGame){
+        health = 5;
+        death = true;
+    }
+    if (health === 0 && medGame){
+        health = 5;
+        death = true;
+    }
+    if(health === 0 && hardGame){
+        health = 5;
+        death = true;
+    }
+    
+    //confetti when win
+    if((winScreen || winScreen2 || winScreen3)){
+        if (frameCount % 2 === 0) {
+            confetti.push(createConfetti(random(width), -10));
+        }
+
+        for (var i = confetti.length - 1; i >= 0; i--) {
+        var c = confetti[i];
+        strokeWeight(1);
+        fill(c.color);
+        ellipse(c.x, c.y, c.size+1, c.size+1);
+
+        c.y += c.speed;
+        c.x += random(-1, 1);
+        c.size *= 0.99;
+
+        if (c.y > height || c.size < 1) {
+            confetti.splice(i, 1);
+        }
+        
+    }
+    }
+    
+    //snow
+    if((easyGame && !winScreen) || (medGame && !winScreen2) || (hardGame && !winScreen3)){
+        if (frameCount % 10 === 0) {
+            confetti.push(createConfetti(random(width), -10));
+        }
+
+        for (var i = confetti.length - 1; i >= 0; i--) {
+        var c = confetti[i];
+        noStroke();
+        fill(255);
+        ellipse(c.x, c.y, c.size+1, c.size+1);
+
+        c.y += c.speed;
+        c.size *= 0.99;
+
+        if (c.y > height || c.size < 1) {
+            confetti.splice(i, 1);
+        }
+        
+    }
+    }
+    
+    if((easyGame || medGame || hardGame)){
+        fill(0);
+        text(timer, 264, 50);
+    }
+    if((easyGame && !winScreen) || (medGame && !winScreen2) || (hardGame && !winScreen3)){
+        timer+=0.0166667;
+    }
+    //rotate
+    angle += rotateSpeed;
+    angle2 -= rotateSpeed;
+    
+    //reload
+    if(reloading){
+        fill(0);
+        text("Reloading", 33, 100);
+        reloadTimer--;
+        if(reloadTimer <= 0){
+            ammo = 10;
+            reloading = false;
+        }
+    }
+
+    //crosshair
+    stroke(0, 0, 0);
+    strokeWeight(3);
+    line(mouseX+7, mouseY-1.6, mouseX+12, mouseY-1.6);
+    line(mouseX-12, mouseY-1.6, mouseX-8, mouseY-1.6);
+    line(mouseX, mouseY+4, mouseX, mouseY+7);
+    line(mouseX, mouseY-12, mouseX, mouseY-8);
+    strokeWeight(1);
+};
