@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    /* Container clips outside edges of the iframe */
-    .game-wrapper {
-      width: 800px;  /* Match your Pygame screen width */
-      height: 600px; /* Match your Pygame screen height */
-      overflow: hidden;
-      position: relative;
-    }
-    .game-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+    <title>My Pygame Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="game-wrapper">
     <iframe width="850" height="500" src="https://codehs.com/sandbox/o0000000000000/light-cycle-snake/embed/?display_mode=displayOnly&show_file_tree=False" frameborder="0" allowfullscreen class="video-iframe"></iframe>
-  </div>
 </body>
-</html> 
+</html>
